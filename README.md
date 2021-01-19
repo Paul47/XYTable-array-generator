@@ -1,7 +1,7 @@
 
 ## XYTable[] array generator
 
-# Intro
+**Intro**
 This Arduino sketch will create an x,y lookup table for LED projects instead of writing and using mapping code. It uses LEDMatrix definitions (ex: HORIZONTAL_ZIGZAG_MATRIX) to define the LED mapping. 
 
 The LED mapping apps I have found all have shortcoming on the size or layout of the matrix. Especially for blocks or cells within the matrix like the popular 8x8 blocks. This sketch includes:
@@ -19,9 +19,9 @@ https://jorgen-vikinggod.github.io/LEDMatrix has an excellent tutorial on mappin
 __OUTPUT:__ will be on the serial terminal so you can review the results and make changes.
 __TO SAVE:__ copy and paste the terminal output array to a file.
 
-## Parameter List Guide
+**Parameter List Guide**
 
-# ================= for width and height ==========================
+================= for width and height ==========================
 
  Do you have an LED array to start with or an IRREGULAR layout? You can #include it in step 1.
 If you have an irregular array, you should 1st create the array with missing LEDs here: 
@@ -33,7 +33,7 @@ FastLED XY Map Generator:  https:macetech.github.io/FastLED-XY-Map-Generator
 WHEN DESIGNING BLOCKS IN A MATRIX, COMBINATIONS CAN GIVE SURPRISING RESULTS.
 IF THE RESULT IS NOT WHAT YOU EXPECTS, REVIEW EACH STEP'S SETTINGS AGAIN!
 
-# STEPS
+**STEPS**
 1.	 array name must be: _"const uint16_t  PROGMEM XYTable[][x] = {}"_ or:  
 _"const uint16_t XYTable[][x] = {}"_ The [x] length is required.
 PROGMEM is optional. Set PROG_MEM below as true or false to match
@@ -50,7 +50,7 @@ PROGMEM is optional. Set PROG_MEM below as true or false to match
 
 3.	How are the LEDs in the total matrix organized? (Regardless of and blocks or cells making up the matrix).
 
-# If using BLOCKs/cell to make up your matrix, this is n/a. See steps 6 and 7
+If using BLOCKs/cell to make up your matrix, this is n/a. See steps 6 and 7
 
     MatrixType_t matrix_type = HORIZONTAL_MATRIX; 
 Options: HORIZONTAL_MATRIX, VERTICAL_MATRIX, HORIZONTAL_ZIGZAG_MATRIX, VERTICAL_ZIGZAG_MATRIX
@@ -65,7 +65,7 @@ TO change the order of BLOCKS see the blocks see step 7.
     MatrixOrder_horizDir horizDir = LEFT_2_RIGHT;        Options: LEFT_2_RIGHT, RIGHT_2_LEFT
     MatrixOrder_vertDir vertDir = TOP_DOWN;               Options: TOP_DOWN, BOTTOM_UP
 
-# ================= BLOCKS options =================
+**================= BLOCKS options =================**
 
 5.	 LEDs make a BLOCK (cell), BLOCKS make up a MATRIX (panel). if you have one long LED string in your display set HAS_BLOCK false and ignore these BLOCK values
 
@@ -96,6 +96,6 @@ b)	 These 2 flip the order of the BLOCKS in the matrix. The LED order inside the
 
     #define TABLE_DIVIDERS true 		Options: true, false
 
-# ================= End BLOCKS =================
+**================= End BLOCKS =================**
 
-# 9.	DONE - compile and run
+**9.	DONE - compile and run**
