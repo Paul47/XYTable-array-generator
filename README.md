@@ -1,8 +1,8 @@
 
-## XYTable[] array generator
+##XYTable[] array generator
 
- #Intro
-This Arduino sketch will create a lookup table for LED projects instead of writing and using mapping code. It uses LEDMatrix definitions (ex: HORIZONTAL_ZIGZAG_MATRIX) to define the LED mapping. 
+#Intro
+This Arduino sketch will create an x,y lookup table for LED projects instead of writing and using mapping code. It uses LEDMatrix definitions (ex: HORIZONTAL_ZIGZAG_MATRIX) to define the LED mapping. 
 
 The LED mapping apps I have found all have shortcoming on the size or layout of the matrix. Especially for blocks or cells within the matrix like the popular 8x8 blocks. This sketch includes:
 
@@ -30,8 +30,8 @@ FastLED XY Map Generator:  https:macetech.github.io/FastLED-XY-Map-Generator
     NOTE: make the array simple, left to right and top to bottom, no zigzag.
     We will make all these changes here.
 
- #   WHEN DESIGNING BLOCKS IN A MATRIX, COMBINATIONS CAN GIVE SURPRISING RESULTS.
- #   IF THE RESULT IS NOT WHAT YOU EXPECTS, REVIEW EACH STEP'S SETTINGS AGAIN!
+#   WHEN DESIGNING BLOCKS IN A MATRIX, COMBINATIONS CAN GIVE SURPRISING RESULTS.
+#   IF THE RESULT IS NOT WHAT YOU EXPECTS, REVIEW EACH STEP'S SETTINGS AGAIN!
 
 #STEPS
 1.	 array name must be: _"const uint16_t  PROGMEM XYTable[][x] = {}"_ or:  
