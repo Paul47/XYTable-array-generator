@@ -7,11 +7,11 @@ This Arduino sketch will create an x,y lookup table for LED projects instead of 
 The LED mapping apps I have found all have shortcoming on the size or layout of the matrix. Especially for blocks or cells within the matrix like the popular 8x8 blocks. This sketch includes:
 
 Up to 32k LEDs
-Small to very large matrices – laid out in any direction with or w/o zigzag
-Matrix can be made of blocks (cells) of any size that of any size– laid out in any direction with or w/o zigzag in the block and block layout within the matrix.
+Small to very large matrices – laid out in any direction with or w/o zigzag.
+Matrix can be made of blocks (cells) of any size – laid out in any direction with or w/o zigzag in the blocks or block layout within the matrix.
 Produces a report on the Serial Terminal of the specified configuration and the resulting mapping array.
  Simple cut and paste into your header file.
-Arduino code in small single purpose functions that are easy to modify
+The Arduino code os made of small single purpose functions that are easy to modified.
 
 LEDMatrix reference:
 https://jorgen-vikinggod.github.io/LEDMatrix has an excellent tutorial on mapping definitions.
@@ -23,7 +23,7 @@ __TO SAVE:__ copy and paste the terminal output array to a file.
 
 ================= for width and height ==========================
 
- Do you have an LED array to start with or an IRREGULAR layout? You can #include it in step 1.
+Do you have an LED array to start with or an IRREGULAR layout? You can #include it in step 1.
 If you have an irregular array, you should 1st create the array with missing LEDs here: 
 FastLED XY Map Generator:  https:macetech.github.io/FastLED-XY-Map-Generator
 
