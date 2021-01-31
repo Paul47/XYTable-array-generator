@@ -17,6 +17,7 @@ LEDMatrix reference:
 https://jorgen-vikinggod.github.io/LEDMatrix has an excellent tutorial on mapping definitions.
 
 __OUTPUT:__ will be on the serial terminal so you can review the results and make changes.
+
 __TO SAVE:__ copy and paste the terminal output array to a file.
 
 **Parameter List Guide**
@@ -31,7 +32,7 @@ FastLED XY Map Generator:  https:macetech.github.io/FastLED-XY-Map-Generator
     We will make all these changes here.
 
 WHEN DESIGNING BLOCKS IN A MATRIX, COMBINATIONS CAN GIVE SURPRISING RESULTS.
-IF THE RESULT IS NOT WHAT YOU EXPECTS, REVIEW EACH STEP'S SETTINGS AGAIN!
+IF THE RESULT IS NOT WHAT YOU EXPECT, REVIEW EACH STEP'S SETTINGS AGAIN!
 
 **STEPS**
 1.	 array name must be: _"const uint16_t  PROGMEM XYTable[][x] = {}"_ or:  
