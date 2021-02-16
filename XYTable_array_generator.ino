@@ -50,8 +50,8 @@ STEPS
 | MATRIX_WIDTH | width of matrix (negative for reverse order)  |
 | MATRIX_HEIGHT| height of matrix  (negative for reverse order)|
 */
-#define MATRIX_WIDTH  32    //use negative value for reverved (right to left)
-#define MATRIX_HEIGHT 32     //use negative value for reverved (bottom to top)
+#define MATRIX_WIDTH  32    //use negative value for reversed (right to left)
+#define MATRIX_HEIGHT 32     //use negative value for reversed (bottom to top)
 
 /*
 3.	How are the LEDs in the total matrix organized? (Regardless of and blocks 
@@ -83,15 +83,15 @@ MatrixType_t matrix_type = HORIZONTAL_MATRIX;  //HORIZONTAL_MATRIX, VERTICAL_MAT
                                                        //HORIZONTAL_ZIGZAG_BLOCKS, VERTICAL_ZIGZAG_BLOCKS
 
 /*
-6a. how are the block/cells organized in the matrix?
+6. how are the block/cells organized in the matrix?
 */
     BlockType_t blocksInMatrix = HORIZONTAL_BLOCKS;   //HORIZONTAL_BLOCKS, VERTICAL_BLOCKS, 
                                                       //HORIZONTAL_ZIGZAG_BLOCKS, VERTICAL_ZIGZAG_BLOCKS
 /*
-6b. NEW OPTION NOT AVAILABLE IN LEDMatrix ONLY IF USING THIS TABLE LOOKUP METHOD
+7. NEW OPTION NOT AVAILABLE IN LEDMatrix ONLY IF USING THIS TABLE LOOKUP METHOD
     These 2 flip the order of the tiles/BLOCKS in the matrix
     The LED order inside the blocks stay the same
-    To flip everything in the matrix panel includeing the LEDs inside the blocks see step 3.
+    To flip everything in the matrix panel including the LEDs inside the blocks see step 3.
 | Parameter    | Description                                   |
 | ------------ |-----------------------------------------------|
 | H_blockDir   | horizontal direction of led flow in the tile  |
@@ -109,7 +109,7 @@ MatrixType_t matrix_type = HORIZONTAL_MATRIX;  //HORIZONTAL_MATRIX, VERTICAL_MAT
 // ================= End BLOCKS =================
 
 /*
-8.     DONE - compile and run
+9.     DONE - compile and run
 */
 
 #define VERSION 1   //report version at bottom of printout
