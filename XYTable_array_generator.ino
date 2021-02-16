@@ -40,12 +40,18 @@ STEPS
 #endif
 
 /*
-2.	Set the overall Panel size in number of LEDs (POSITIVE VALUES ONLY). 
-    Previous LEDMatrix versions use a negative value for reserved (right to left) 
-    and (bottom to top). Use step 4 below to do this.
+2.	Set the overall Panel size in number of LEDs. 
+    What direction does the FIRST row go?
+    What direction does the FIRST column go?
+    LEDMatrix uses a NEGATIVE value for reserved (right to left) 
+    and (bottom to top).
+| Parameter    | Description                                   |
+| ------------ |-----------------------------------------------|
+| MATRIX_WIDTH | width of matrix (negative for reverse order)  |
+| MATRIX_HEIGHT| height of matrix  (negative for reverse order)|
 */
-#define MATRIX_WIDTH  32    //former LEDMatrix use negative value for reverved (right to left)
-#define MATRIX_HEIGHT 32     //former LEDMatrix use negative value for reverved (bottom to top)
+#define MATRIX_WIDTH  32    //use negative value for reverved (right to left)
+#define MATRIX_HEIGHT 32     //use negative value for reverved (bottom to top)
 
 /*
 3.	How are the LEDs in the total matrix organized? (Regardless of and blocks 
@@ -57,24 +63,13 @@ STEPS
 MatrixType_t matrix_type = HORIZONTAL_MATRIX;  //HORIZONTAL_MATRIX, VERTICAL_MATRIX, 
                                                        //HORIZONTAL_ZIGZAG_MATRIX, VERTICAL_ZIGZAG_MATRIX
 
-/*
-4.	What direction does the FIRST row go?
-    What direction does the FIRST column go?
-
-      >>>> These flip THE ENTIRE MATRIX even LED order inside of BLOCKS if present
-      >>>> TO change the order of BLOCKS see the blocks see step 7.
-*/
-MatrixOrder_horizDir horizDir = LEFT_2_RIGHT;        //LEFT_2_RIGHT, RIGHT_2_LEFT
-MatrixOrder_vertDir vertDir = TOP_DOWN;             //TOP_DOWN, BOTTOM_UP
-
-
 /* =============== BLOCKS options =================
 
-5.	 LEDs make a BLOCK (cell), BLOCKS make up a MATRIX (panel). 
+4.	 LEDs make a BLOCK (cell), BLOCKS make up a MATRIX (panel). 
     if you have one long LED string in your display set HAS_BLOCK false 
     and ignore these BLOCK values
 */
-#define HAS_BLOCKS  true     //Is this matrix made up of block/cells of LEDs?
+#define HAS_BLOCKS  false     //Is this matrix made up of block/cells of LEDs?
     #define MATRIX_TILE_WIDTH  8 //width of each matrix BLOCK/CELL  (not total display)
     #define MATRIX_TILE_HEIGHT  8 // height of each matrix BLOCK/CELL
 
@@ -82,23 +77,28 @@ MatrixOrder_vertDir vertDir = TOP_DOWN;             //TOP_DOWN, BOTTOM_UP
     #define MATRIX_TILE_V    4  // number of tiles arranged vertically
 
 /*
-6. How are the leds organized inside the block/cell?
+5. How are the leds organized inside the block/cell?
 */
     BlockType_t blockOrg = HORIZONTAL_BLOCKS;   //HORIZONTAL_BLOCKS, VERTICAL_BLOCKS, 
                                                        //HORIZONTAL_ZIGZAG_BLOCKS, VERTICAL_ZIGZAG_BLOCKS
 
 /*
-7a. how are the block/cells organized in the matrix?
+6a. how are the block/cells organized in the matrix?
 */
     BlockType_t blocksInMatrix = HORIZONTAL_BLOCKS;   //HORIZONTAL_BLOCKS, VERTICAL_BLOCKS, 
                                                       //HORIZONTAL_ZIGZAG_BLOCKS, VERTICAL_ZIGZAG_BLOCKS
 /*
-7b. These 2 flip the order of the BLOCKS in the matrix
+6b. NEW OPTION NOT AVAILABLE IN LEDMatrix ONLY IF USING THIS TABLE LOOKUP METHOD
+    These 2 flip the order of the tiles/BLOCKS in the matrix
     The LED order inside the blocks stay the same
-    To flip everything includeing the LEDs inside the blocks see step 4.
+    To flip everything in the matrix panel includeing the LEDs inside the blocks see step 3.
+| Parameter    | Description                                   |
+| ------------ |-----------------------------------------------|
+| H_blockDir   | horizontal direction of led flow in the tile  |
+| V_blockDir   | vertical direction of led flow in the tile    |
 */
-    MatrixOrder_horizDir H_blockDir = LEFT_2_RIGHT;        //LEFT_2_RIGHT, RIGHT_2_LEFT
-    MatrixOrder_vertDir V_blockDir = TOP_DOWN;             //TOP_DOWN, BOTTOM_UP
+    MatrixOrder_horizDir H_blockDir = LEFT_2_RIGHT;        //leds in tile LEFT_2_RIGHT, RIGHT_2_LEFT
+    MatrixOrder_vertDir V_blockDir = TOP_DOWN;             //leds in tile TOP_DOWN, BOTTOM_UP
 
 /*
 8. DEBUGGING: Add h and v hash marks between blocks for easier viewing
@@ -109,7 +109,7 @@ MatrixOrder_vertDir vertDir = TOP_DOWN;             //TOP_DOWN, BOTTOM_UP
 // ================= End BLOCKS =================
 
 /*
-9.     DONE - compile and run
+8.     DONE - compile and run
 */
 
 #define VERSION 1   //report version at bottom of printout
@@ -117,11 +117,30 @@ boolean error = false;  //CAPTURE A FEW ERRORS
 #define pt(msg)     Serial.println(msg);    //Serial.println MACRO
 #define ptt(msg)     Serial.print(msg);    //Serial.printl MACRO
 
-#define NUM_LEDS        MATRIX_WIDTH * MATRIX_HEIGHT	//leds total on entire panel
-#define LEDS_PER_BLOCK  MATRIX_TILE_WIDTH* MATRIX_TILE_HEIGHT
+/*
+These flip THE ENTIRE MATRIX even LED order inside of BLOCKS if present
+To change the order of BLOCKS see the blocks see step 7.
+*/
+#if (MATRIX_WIDTH < 0)
+    MatrixOrder_horizDir horizDir = RIGHT_2_LEFT;        //LEFT_2_RIGHT, RIGHT_2_LEFT
+    #define MATRIX_WIDTH_ABS             -(MATRIX_WIDTH)        //is negative so need postive for arrays
+#else
+    MatrixOrder_horizDir horizDir = LEFT_2_RIGHT;
+    #define MATRIX_WIDTH_ABS             MATRIX_WIDTH
+#endif
+#if (MATRIX_HEIGHT < 0)
+    MatrixOrder_vertDir vertDir = BOTTOM_UP;                //TOP_DOWN, BOTTOM_UP
+    #define MATRIX_HEIGHT_ABS            -(MATRIX_HEIGHT)        //is negative
+#else
+    MatrixOrder_vertDir vertDir = TOP_DOWN;
+    #define MATRIX_HEIGHT_ABS            MATRIX_HEIGHT
+#endif
 
-uint16_t mainArray[MATRIX_WIDTH][MATRIX_HEIGHT];
-uint16_t workingArray[MATRIX_WIDTH][MATRIX_HEIGHT];
+#define NUM_LEDS        MATRIX_WIDTH_ABS * MATRIX_HEIGHT_ABS 	//leds total on entire panel
+#define LEDS_PER_BLOCK  MATRIX_TILE_WIDTH * MATRIX_TILE_HEIGHT
+
+uint16_t mainArray[MATRIX_WIDTH_ABS][MATRIX_HEIGHT_ABS ];
+uint16_t workingArray[MATRIX_WIDTH_ABS][MATRIX_HEIGHT_ABS ];
 
 //configuration flags
 boolean _hflag = true;
@@ -191,10 +210,10 @@ void build_sinple_table() {
 #if (HAVE_ARRAY == true)
     uint16_t toX = 0;
     uint16_t toY = 0;
-    copy_table_array(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT, toX, toY);        //copy an array block to a starting start x,y offset (for blocks
+    copy_table_array(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS , toX, toY);        //copy an array block to a starting start x,y offset (for blocks
     pt("your array copied");
 #else
-    build_horiz_array(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);         //build a ENTIRE simple MAINarray
+    build_horiz_array(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );         //build a ENTIRE simple MAINarray
     pt("new array created");
 #endif
 }
@@ -208,7 +227,7 @@ void matrix_direction() {
         break;
     case RIGHT_2_LEFT:
         pt("  right-2-left-H swap");
-        H_swap(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+        H_swap(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
         break;
     }
     switch (vertDir) {
@@ -217,7 +236,7 @@ void matrix_direction() {
         break;
     case BOTTOM_UP:
         pt("  bottom up V swap");
-        V_swap(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+        V_swap(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
         break;
     }
     pt("matrix direction completed");
@@ -231,17 +250,17 @@ void matrix_reorg() {
         pt("  horiz matrix-do nothing");
         break;
     case VERTICAL_MATRIX:
-        Diagonal_swap(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+        Diagonal_swap(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
         break;
     case HORIZONTAL_ZIGZAG_MATRIX:
-        horiz_zig(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+        horiz_zig(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
         break;
     case VERTICAL_ZIGZAG_MATRIX:
         if (!_vflag) {
             pt("                         //ppd need flag for current h or v");
-            Diagonal_swap(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+            Diagonal_swap(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
         }
-        Vertical_zig(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT); 
+        Vertical_zig(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS ); 
         break;
     }
     pt("matrix reorg completed");
@@ -253,8 +272,8 @@ void matrix_reorg() {
 void build_block_table() {
     pt("LEDs in block started");
 
-    if (((MATRIX_TILE_WIDTH * MATRIX_TILE_H) != MATRIX_WIDTH) ||
-        ((MATRIX_TILE_HEIGHT * MATRIX_TILE_V) != MATRIX_HEIGHT)) {
+    if (((MATRIX_TILE_WIDTH * MATRIX_TILE_H) != MATRIX_WIDTH_ABS) ||
+        ((MATRIX_TILE_HEIGHT * MATRIX_TILE_V) != MATRIX_HEIGHT_ABS )) {
         pt("ERROR: Matrix tiles do not match matrix sizes - build_block_table");
         error = true;
         return;
@@ -276,7 +295,7 @@ void build_block_table() {
             vertrical_zigzag_ledsinBlock(0, 0, MATRIX_TILE_WIDTH, MATRIX_TILE_HEIGHT);
             break;
         }
-        work2main(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+        work2main(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
     }
     pt("LEDs in block completed");
 }
@@ -373,7 +392,7 @@ void H_block_swap() {
             copy_block_service(frmX, frmY, MATRIX_TILE_WIDTH, MATRIX_TILE_HEIGHT, toX, toY);
         }
     }
-    work2main(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+    work2main(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
     pt("H_block_swap completed");
 }
 
@@ -396,7 +415,7 @@ void V_block_swap() {
             copy_block_service(frmX, frmY, MATRIX_TILE_WIDTH, MATRIX_TILE_HEIGHT, toX, toY);
         }
     }
-    work2main(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+    work2main(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
     pt("V_block_swap completed");
 }
 
@@ -450,7 +469,7 @@ void h_zig_block_copy() {
             block_num++;    //keep x increasing thru the next block
         }
     }
-    work2main(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+    work2main(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
     pt("h_zig_block_copy completed");
 }
 
@@ -486,7 +505,7 @@ void v_zig_block_copy() {
             block_num++;    //keep x increasing thru the next block
         }
     }
-    work2main(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+    work2main(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
     pt("v_zig_block_copy completed");
 }
 
@@ -512,7 +531,7 @@ void h_block_copy() {
             block_num++;    //keep x increasing thru the next block
         }
     }
-    work2main(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+    work2main(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
     pt("h_block_copy completed");
 }
 
@@ -549,7 +568,7 @@ void v_block_copy() {
             block_num++;    //keep x increasing thru the next block
         }
     }
-    work2main(0, 0, MATRIX_WIDTH, MATRIX_HEIGHT);
+    work2main(0, 0, MATRIX_WIDTH_ABS, MATRIX_HEIGHT_ABS );
     pt("v_block_copy completed");
 }
 
@@ -710,8 +729,8 @@ void run_report() {
     pt("");
     ptt("NUM_LEDS = "); pt(NUM_LEDS);
     ptt("HAVE_ARRAY = "); pt(HAVE_ARRAY);
-    ptt("MATRIX_WIDTH = "); pt(MATRIX_WIDTH);
-    ptt("MATRIX_HEIGHT = "); pt(MATRIX_HEIGHT);
+    ptt("MATRIX_WIDTH = "); pt(MATRIX_WIDTH);       //display possible negative value
+    ptt("MATRIX_HEIGHT  = "); pt(MATRIX_HEIGHT);
     if (!HAS_BLOCKS){
      ptt("matrix_type = "); pt(MatrixType[matrix_type]);
     }
@@ -726,7 +745,7 @@ void run_report() {
         ptt("   MATRIX_TILE_V = "); pt(MATRIX_TILE_V);
         ptt("   blockOrg = "); pt(block_Org[blockOrg]);
         ptt("   blocksInMatrix = "); pt(block_Org[blocksInMatrix]);
-        if (MATRIX_WIDTH > 64) {
+        if (MATRIX_WIDTH_ABS > 64) {
             pt("");
             pt("WIDE ARRAYS WILL LOOK MESSY");
             pt("COPY TO AN EDITOR w/o text wrapping TO VIEW");
@@ -743,7 +762,7 @@ void run_report() {
     pt("this array is in logical VISUAL ORDER of rows and columns so NOTE:");
     pt("Addressing in your code is in y, x order XYTable[y][x] NOT x, y");
     pt("*/");
-    ptt("const uint16_t  PROGMEM XYTable[]["); ptt(MATRIX_WIDTH); pt("] = {");    //<< width x or height y??
+    ptt("const uint16_t  PROGMEM XYTable[]["); ptt(MATRIX_WIDTH_ABS); pt("] = {");    //<< width x or height y??
     //print tabel rows x w/ commas, comma at end of line
     uint16_t columns = 3;
     int16_t ledCount = 0;
@@ -753,8 +772,8 @@ void run_report() {
     else if (NUM_LEDS > 9999){
         columns = 5;
     }
-    for (y = 0; y < MATRIX_HEIGHT; y++) {           //catch last line
-        for (x = 0; x < MATRIX_WIDTH; x++) {
+    for (y = 0; y < MATRIX_HEIGHT_ABS ; y++) {           //catch last line
+        for (x = 0; x < MATRIX_WIDTH_ABS; x++) {
             if (HAS_BLOCKS && TABLE_DIVIDERS) {                //for easier fiewing -
                 table_dividers(x, y, columns); 
             }
@@ -790,7 +809,7 @@ void table_dividers(int16_t x, int16_t y, uint16_t columns) {
         ptt("|");
     }
     if (!(y % (MATRIX_TILE_HEIGHT)) && y > 0 && y != y_cur) {
-        for (uint16_t i = 0; i < (columns * MATRIX_WIDTH - 5); i++) {
+        for (uint16_t i = 0; i < (columns * MATRIX_WIDTH_ABS - 5); i++) {
             ptt("");
         }
         pt("");
